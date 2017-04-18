@@ -5,21 +5,24 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_movie"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
     <TextView
         android:id="@+id/error_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:drawableTint="@color/colorPrimary"
+        android:drawableTop="@android:drawable/stat_sys_warning"
         android:padding="16dp"
         android:text="@string/error_message"
         android:textSize="20sp"
-        android:visibility="invisible" />
+        android:visibility="invisible"/>
 
     <ProgressBar
         android:id="@+id/content_loading"
-        android:layout_height="48dp"
         android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="center"
         android:visibility="invisible" />
 
