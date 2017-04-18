@@ -14,7 +14,7 @@
         <ImageView
             android:id="@+id/movie_icon"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="350dp"
             android:layout_gravity="center"
             android:contentDescription="@string/poster_description"
             android:scaleType="centerCrop" />
@@ -51,10 +51,20 @@
         </LinearLayout>
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="8dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="monospace"
+            android:text="@string/plot_synopsis"/>
+        <TextView
             android:id="@+id/overview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             android:fontFamily="monospace"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"

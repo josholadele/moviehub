@@ -14,6 +14,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     TextView averageRating;
     TextView releaseDate;
     TextView movieOverview;
+    public String PosterBaseUrl = "http://image.tmdb.org/t/p/";
+    public String PosterSize = "w342";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +36,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             if (getSupportActionBar() != null)
                 getSupportActionBar().setTitle(movie.title);
             Picasso.with(this)
-                    .load(MovieAdapter.PosterBaseUrl + MovieAdapter.PosterSize + movie.posterPath)
+                    .load(PosterBaseUrl + PosterSize + movie.posterPath)
                     .into(movieIcon);
             String rating = movie.voteAverage + getString(R.string.rating_score);
             averageRating.setText(rating);
