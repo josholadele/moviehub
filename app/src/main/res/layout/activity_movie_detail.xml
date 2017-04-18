@@ -14,7 +14,7 @@
         <ImageView
             android:id="@+id/movie_icon"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="300dp"
             android:layout_gravity="center"
             android:contentDescription="@string/poster_description"
             android:scaleType="centerCrop" />
@@ -34,7 +34,6 @@
                 android:background="@color/colorPrimaryDark"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="svadbsak"
                 android:textColor="#fff"
                 android:textSize="18sp" />
 
@@ -47,7 +46,6 @@
                 android:background="@color/colorPrimary"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="svadbsak"
                 android:textColor="#fff"
                 android:textSize="18sp" />
         </LinearLayout>
