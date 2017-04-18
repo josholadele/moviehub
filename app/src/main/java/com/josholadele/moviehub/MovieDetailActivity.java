@@ -36,7 +36,8 @@ public class MovieDetailActivity extends AppCompatActivity {
             Picasso.with(this)
                     .load(MovieAdapter.PosterBaseUrl + MovieAdapter.PosterSize + movie.posterPath)
                     .into(movieIcon);
-            averageRating.setText(movie.voteAverage);
+            String rating = movie.voteAverage + getString(R.string.rating_score);
+            averageRating.setText(rating);
             releaseDate.setText(movie.releaseDate);
             movieOverview.setText(movie.overview);
         }
