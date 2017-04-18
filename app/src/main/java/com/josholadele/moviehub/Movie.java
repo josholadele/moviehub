@@ -1,17 +1,42 @@
 package com.josholadele.moviehub;
 
-import org.json.JSONObject;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by Oladele on 4/16/17.
  */
-public class Movie {
+public class Movie implements Parcelable {
 
-    private String title;
-    private String posterPath;
-    private String overview;
-    private String voteAverage;
-    private String releaseDate;
+    public String title;
+    public String posterPath;
+    public String overview;
+    public String voteAverage;
+    public String releaseDate;
+
+    protected Movie(Parcel in) {
+        title = in.readString();
+        posterPath = in.readString();
+        overview = in.readString();
+        voteAverage = in.readString();
+        releaseDate = in.readString();
+    }
+
+    public Movie() {
+
+    }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
 
     public Movie(String title, String posterPath, String overview, String voteAverage, String releaseDate) {
         this.title = title;
@@ -21,15 +46,17 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    public Movie(String title, int oda) {
-        this.title = title;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
-    public Movie(JSONObject movieJson) {
-        this.title = movieJson.optString("");
-        this.posterPath = movieJson.optString("");
-        this.overview = movieJson.optString("");
-        this.voteAverage = movieJson.optString("");
-        this.releaseDate = movieJson.optString("");
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(title);
+        parcel.writeString(posterPath);
+        parcel.writeString(overview);
+        parcel.writeString(voteAverage);
+        parcel.writeString(releaseDate);
     }
 }
