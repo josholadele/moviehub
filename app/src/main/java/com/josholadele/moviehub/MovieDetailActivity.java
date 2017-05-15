@@ -176,8 +176,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.mark_favorite) {
-
-            movie.trailerJson = trailerArray.toString();
+            if (trailerArray != null) {
+                movie.trailerJson = trailerArray.toString();
+            }
             ContentValues contentValues = buildContentValues(movie);
 
             Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);

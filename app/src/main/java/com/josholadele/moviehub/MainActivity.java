@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.josholadele.moviehub.data.MovieContract;
+import com.josholadele.moviehub.data.SharedPref;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +36,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sortString = SORT_POPULAR;
+        sortString = new SharedPref(this).getSortType();
+        int position = 0;
         if (savedInstanceState != null) {
             sortString = savedInstanceState.getString("sort_string");
+            position = savedInstanceState.getInt("current_position");
         }
         setContentView(R.layout.activity_main);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movie);
@@ -54,6 +57,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         fetchMovies(mMovieAdapter, sortString);
 
         mRecyclerView.setAdapter(mMovieAdapter);
+        final int finalPosition = position;
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                if (finalPosition != 0) {
+                    mRecyclerView.scrollToPosition(finalPosition);
+                }
+            }
+        });
+
+
     }
 
     private void fetchMovies(MovieAdapter adapter, String sortString) {
@@ -142,12 +156,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("sort_string", sortString);
+        outState.putInt("current_position", ((GridLayoutManager) mRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        new SharedPref(this).setSortType(sortString);
     }
 
     public List<Movie> movieList;
