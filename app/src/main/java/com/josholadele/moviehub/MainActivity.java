@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.josholadele.moviehub.data.MovieContract;
 
@@ -66,9 +67,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private void fetchMovies(MovieAdapter adapter, String sortString) {
         if (sortString.equalsIgnoreCase(SORT_FAVORITE)) {
             List<Movie> movieList = loadFavorites();
-            if (movieList != null && movieList.size() > 0) {
-                showMovieDataView();
-                adapter.setMovieData(movieList);
+            if (movieList != null) {
+                if (movieList.size() > 0) {
+                    showMovieDataView();
+                    adapter.setMovieData(movieList);
+                } else {
+                    Toast.makeText(this, "You currently do not have any favorite movie", Toast.LENGTH_SHORT).show();
+                }
             }
         } else {
             new FetchMovieTask(adapter).execute(sortString);

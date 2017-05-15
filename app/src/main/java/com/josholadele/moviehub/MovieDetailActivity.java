@@ -122,8 +122,9 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private void showTrailers(final JSONArray trailerArray) {
         int noOfTrailers = trailerArray.length();
+        findViewById(R.id.trailer_loading).setVisibility(View.GONE);
         for (int i = 0; i < noOfTrailers; i++) {
-            View newView = getLayoutInflater().inflate(R.layout.trailer_button, trailerLayout,false);
+            View newView = getLayoutInflater().inflate(R.layout.trailer_button, trailerLayout, false);
             Button trailerButton = (Button) newView.findViewById(R.id.button);
             trailerButton.setText(trailerArray.optJSONObject(i).optString("name"));
             final String key = trailerArray.optJSONObject(i).optString("key");
@@ -148,7 +149,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         int noOfReviews = reviewArray.length();
         View newView;
         for (int i = 0; i < noOfReviews; i++) {
-            newView = getLayoutInflater().inflate(R.layout.review_item, reviewLayout,false);
+            newView = getLayoutInflater().inflate(R.layout.review_item, reviewLayout, false);
             TextView author = (TextView) newView.findViewById(R.id.author);
             TextView content = (TextView) newView.findViewById(R.id.content);
             author.setText(reviewArray.optJSONObject(i).optString("author") + " :");
@@ -278,11 +279,12 @@ public class MovieDetailActivity extends AppCompatActivity {
     void buildDetailResults(String result, String fetchOption) {
         try {
             JSONObject trailerObject = new JSONObject(result);
-            trailerArray = trailerObject.optJSONArray("results");
             if ("videos".equals(fetchOption)) {
+                trailerArray = trailerObject.optJSONArray("results");
                 showTrailers(trailerArray);
             } else if ("reviews".equals(fetchOption)) {
-                showReviews(trailerArray);
+                reviewArray = trailerObject.optJSONArray("results");
+                showReviews(reviewArray);
             }
         } catch (Exception e) {
             e.printStackTrace();
