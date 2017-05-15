@@ -5,5 +5,5 @@ package com.josholadele.moviehub;
  */
 
 public class API {
-    public static String API_KEY = "a523d9cf100a6dd9c5598f41f93991c5"; //Put API key here
+    public static String API_KEY = ""; //Put API key here
 }
