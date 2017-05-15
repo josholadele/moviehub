@@ -37,7 +37,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     ImageView movieIconBackground, movieIcon;
     ScrollView synopsisView;
     LinearLayout trailerLayout;
-    LinearLayout review;
+    LinearLayout reviewLayout;
     TextView averageRating;
     TextView releaseDate;
     TextView movieOverview;
@@ -45,6 +45,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     public String PosterBaseUrl = "http://image.tmdb.org/t/p/";
     public String PosterSize = "w342";
     JSONArray trailerArray;
+    JSONArray reviewArray;
     private Menu mMenu;
 
     @Override
@@ -60,10 +61,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
         trailerLayout = (LinearLayout) findViewById(R.id.trailer_frame);
-        review = (LinearLayout) findViewById(R.id.review);
+        reviewLayout = (LinearLayout) findViewById(R.id.review);
 
         if (!isFavorite(movie)) {
-            new FetchMovieTrailer(movie).execute("videos");
+            new FetchMovieDetails(movie).execute("videos");
         } else {
             try {
                 trailerArray = new JSONArray(movie.trailerJson);
@@ -73,15 +74,16 @@ public class MovieDetailActivity extends AppCompatActivity {
             }
 
         }
+        new FetchMovieDetails(movie).execute("reviews");
         findViewById(R.id.toggle_review).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(review.getVisibility()==View.GONE ||review.getVisibility()==View.INVISIBLE){
-                    review.setVisibility(View.VISIBLE);
-                    ((TextView)findViewById(R.id.toggle_review)).setText(getString(R.string.hide_review));
-                }else{
-                    review.setVisibility(View.GONE);
-                    ((TextView)findViewById(R.id.toggle_review)).setText(getString(R.string.show_review));
+                if (reviewLayout.getVisibility() == View.GONE || reviewLayout.getVisibility() == View.INVISIBLE) {
+                    reviewLayout.setVisibility(View.VISIBLE);
+                    ((TextView) findViewById(R.id.toggle_review)).setText(getString(R.string.hide_review));
+                } else {
+                    reviewLayout.setVisibility(View.GONE);
+                    ((TextView) findViewById(R.id.toggle_review)).setText(getString(R.string.show_review));
                 }
             }
         });
@@ -121,11 +123,11 @@ public class MovieDetailActivity extends AppCompatActivity {
     private void showTrailers(final JSONArray trailerArray) {
         int noOfTrailers = trailerArray.length();
         for (int i = 0; i < noOfTrailers; i++) {
-            getLayoutInflater().inflate(R.layout.trailer_button, trailerLayout);
-            Button sd = (Button) findViewById(R.id.button);
-            sd.setText(trailerArray.optJSONObject(i).optString("name"));
+            View newView = getLayoutInflater().inflate(R.layout.trailer_button, trailerLayout,false);
+            Button trailerButton = (Button) newView.findViewById(R.id.button);
+            trailerButton.setText(trailerArray.optJSONObject(i).optString("name"));
             final String key = trailerArray.optJSONObject(i).optString("key");
-            sd.setOnClickListener(new View.OnClickListener() {
+            trailerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(
@@ -138,6 +140,20 @@ public class MovieDetailActivity extends AppCompatActivity {
                     }
                 }
             });
+            trailerLayout.addView(newView);
+        }
+    }
+
+    private void showReviews(final JSONArray reviewArray) {
+        int noOfReviews = reviewArray.length();
+        View newView;
+        for (int i = 0; i < noOfReviews; i++) {
+            newView = getLayoutInflater().inflate(R.layout.review_item, reviewLayout,false);
+            TextView author = (TextView) newView.findViewById(R.id.author);
+            TextView content = (TextView) newView.findViewById(R.id.content);
+            author.setText(reviewArray.optJSONObject(i).optString("author") + " :");
+            content.setText(reviewArray.optJSONObject(i).optString("content"));
+            reviewLayout.addView(newView);
         }
     }
 
@@ -168,7 +184,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             // Display the URI that's returned with a Toast
             // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
             if (uri != null) {
-                Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Added to favorites", Toast.LENGTH_LONG).show();
                 toggleFavorite(true, mMenu);
             }
         } else if (id == R.id.unmark_favorite) {
@@ -176,6 +192,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             String[] whereArgs = new String[]{Integer.toString(movie.movieId)};
             int deletedRow = getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, where, whereArgs);
             if (deletedRow > 0) {
+                Toast.makeText(getBaseContext(), "Removed from favorites", Toast.LENGTH_LONG).show();
                 toggleFavorite(false, mMenu);
             }
 
@@ -196,15 +213,16 @@ public class MovieDetailActivity extends AppCompatActivity {
         return values;
     }
 
-    class FetchMovieTrailer extends AsyncTask<String, Void, String> {
+    class FetchMovieDetails extends AsyncTask<String, Void, String> {
 
-        final String BASE_URL = "https://api.themoviedb.org/3/movie/";
-        final String API_KEY = "api_key";
+        final static String BASE_URL = "https://api.themoviedb.org/3/movie/";
+        final static String API_KEY = "api_key";
         final Movie movie;
+        String fetchOption;
 
         HttpURLConnection urlConnection = null;
 
-        FetchMovieTrailer(Movie movie) {
+        FetchMovieDetails(Movie movie) {
             this.movie = movie;
         }
 
@@ -219,10 +237,10 @@ public class MovieDetailActivity extends AppCompatActivity {
             if (strings.length == 0) {
                 return null;
             }
-
+            fetchOption = strings[0];
             Uri uri = Uri.parse(BASE_URL).buildUpon()
                     .appendEncodedPath(String.valueOf(movie.movieId))
-                    .appendEncodedPath("videos")
+                    .appendEncodedPath(strings[0])
                     .appendQueryParameter(API_KEY, API.API_KEY)
                     .build();
             URL url;
@@ -253,15 +271,19 @@ public class MovieDetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            buildTrailerResults(result);
+            buildDetailResults(result, fetchOption);
         }
     }
 
-    void buildTrailerResults(String result) {
+    void buildDetailResults(String result, String fetchOption) {
         try {
             JSONObject trailerObject = new JSONObject(result);
             trailerArray = trailerObject.optJSONArray("results");
-            showTrailers(trailerArray);
+            if ("videos".equals(fetchOption)) {
+                showTrailers(trailerArray);
+            } else if ("reviews".equals(fetchOption)) {
+                showReviews(trailerArray);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "An Error Occurred", Toast.LENGTH_SHORT).show();

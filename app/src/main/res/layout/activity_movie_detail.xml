@@ -41,11 +41,11 @@
                     android:orientation="horizontal">
 
                     <ImageView
-                        android:background="@color/colorPrimary"
-                        android:padding="6dp"
                         android:id="@+id/movie_icon_small"
                         android:layout_width="120dp"
                         android:layout_height="180dp"
+                        android:background="@color/colorPrimary"
+                        android:padding="6dp"
                         android:scaleType="centerCrop" />
 
                     <LinearLayout
@@ -187,30 +187,30 @@
                             android:indeterminate="true" />
 
                         <LinearLayout
-                            android:layout_width="match_parent"
                             android:id="@+id/trailer_frame"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center"
                             android:orientation="vertical">
 
                             <!--<LinearLayout-->
-                                <!--android:id="@+id/trailer_row"-->
-                                <!--android:layout_width="match_parent"-->
-                                <!--android:layout_height="wrap_content"-->
-                                <!--android:gravity="center"-->
-                                <!--android:orientation="horizontal">-->
+                            <!--android:id="@+id/trailer_row"-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:gravity="center"-->
+                            <!--android:orientation="horizontal">-->
 
-                                <!--<Button-->
-                                    <!--android:layout_width="wrap_content"-->
-                                    <!--android:layout_height="35dp"-->
-                                    <!--android:layout_margin="5dp"-->
-                                    <!--android:text="Extended Big Game Spot" />-->
+                            <!--<Button-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="35dp"-->
+                            <!--android:layout_margin="5dp"-->
+                            <!--android:text="Extended Big Game Spot" />-->
 
-                                <!--<Button-->
-                                    <!--android:layout_width="wrap_content"-->
-                                    <!--android:layout_height="35dp"-->
-                                    <!--android:layout_margin="5dp"-->
-                                    <!--android:text="Trailer 2" />-->
+                            <!--<Button-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="35dp"-->
+                            <!--android:layout_margin="5dp"-->
+                            <!--android:text="Trailer 2" />-->
                             <!--</LinearLayout>-->
 
                         </LinearLayout>
@@ -227,8 +227,9 @@
 
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:orientation="horizontal"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -240,13 +241,13 @@
                             android:textStyle="italic" />
 
                         <TextView
-                            android:layout_width="wrap_content"
                             android:id="@+id/toggle_review"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/show_review"
-                            android:layout_alignParentEnd="true"
                             android:layout_alignParentBottom="true"
-                            android:layout_marginRight="10dp"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginRight="30dp"
+                            android:text="@string/show_review"
                             android:textColor="#fff"
                             android:textSize="14sp"
                             android:textStyle="italic" />
@@ -254,12 +255,14 @@
 
 
                     <LinearLayout
+                        android:id="@+id/review"
                         android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
+                        android:layout_marginTop="5dp"
                         android:orientation="vertical"
-                        android:id="@+id/review"
-                        android:layout_height="wrap_content" />
+                        android:visibility="gone" />
 
                 </LinearLayout>
 

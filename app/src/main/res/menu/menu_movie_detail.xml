@@ -13,11 +13,13 @@
         android:id="@+id/mark_favorite"
         android:orderInCategory="2"
         android:title="@string/mark_favorite_add"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_star_border_white_24dp"
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/unmark_favorite"
         android:orderInCategory="3"
         android:title="@string/mark_favorite_remove"
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_star_white_24dp"
+        app:showAsAction="always" />
 </menu>
