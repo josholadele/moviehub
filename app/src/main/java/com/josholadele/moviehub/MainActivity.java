@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static com.josholadele.moviehub.R.menu.movie;
+
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieClickListener {
 
     private RecyclerView mRecyclerView;
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sortString = SORT_POPULAR;
         if (savedInstanceState != null) {
             sortString = savedInstanceState.getString("sort_string");
         }
@@ -58,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setHasFixedSize(true);
 
         mMovieAdapter = new MovieAdapter(this);
-        sortString = SORT_POPULAR;
         fetchMovies(mMovieAdapter, sortString);
 
         mRecyclerView.setAdapter(mMovieAdapter);
@@ -117,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.movie, menu);
+        getMenuInflater().inflate(movie, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -157,6 +159,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onSaveInstanceState(outState);
         outState.putString("sort_string", sortString);
     }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+    }
+    public List<Movie> movieList;
 
     @Override
     public void onMovieClick(Movie movie) {
@@ -217,12 +226,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         }
 
+
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             mContentLoading.setVisibility(View.GONE);
             if (result != null && !result.equals("")) {
-                List<Movie> movieList = buildFromResult(result);
+                movieList = buildFromResult(result);
                 if (movieList != null && movieList.size() > 0) {
                     showMovieDataView();
                     movieAdapter.setMovieData(movieList);
