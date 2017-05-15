@@ -227,6 +227,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             this.movie = movie;
         }
 
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
