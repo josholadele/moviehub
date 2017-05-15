@@ -4,19 +4,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
+    <!--<item-->
+        <!--android:id="@+id/show_review"-->
+        <!--android:orderInCategory="1"-->
+        <!--android:title="@string/show_review"-->
+        <!--app:showAsAction="never" />-->
     <item
-        android:id="@+id/sort_most_popular"
-        android:orderInCategory="1"
-        android:title="@string/action_most_popular"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/sort_top_rated"
+        android:id="@+id/mark_favorite"
         android:orderInCategory="2"
-        android:title="@string/action_top_rated"
+        android:title="@string/mark_favorite_add"
         app:showAsAction="never" />
+
     <item
-        android:id="@+id/sort_favorites"
+        android:id="@+id/unmark_favorite"
         android:orderInCategory="3"
-        android:title="@string/action_favorite"
+        android:title="@string/mark_favorite_remove"
         app:showAsAction="never" />
 </menu>

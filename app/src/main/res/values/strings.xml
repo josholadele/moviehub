@@ -2,9 +2,17 @@
     <string name="app_name">MovieHub</string>
     <string name="error_message">An error occurred. Please Try again!</string>
     <string name="action_most_popular">Most Popular</string>
+    <string name="show_trailer">Show Trailer</string>
+    <string name="show_review">Show</string>
+    <string name="hide_review">Hide</string>
+    <string name="mark_favorite_add">Add to Favorites</string>
+    <string name="mark_favorite_remove">Remove from Favorites</string>
     <string name="poster_description">Movie poster</string>
     <string name="action_top_rated">Top Rated</string>
+    <string name="action_favorite">Favorites</string>
     <string name="API_KEY">a523d9cf100a6dd9c5598f41f93991c5</string>
     <string name="rating_score">/10</string>
     <string name="plot_synopsis">Plot Synopsis</string>
+    <string name="review">Review</string>
+    <string name="title_trailers">Trailers</string>
 </resources>

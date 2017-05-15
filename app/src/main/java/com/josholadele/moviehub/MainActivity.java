@@ -1,9 +1,11 @@
 package com.josholadele.moviehub;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,11 +15,12 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.josholadele.moviehub.data.MovieContract;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -31,10 +34,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private TextView mErrorTextView;
     private ProgressBar mContentLoading;
     private MovieAdapter mMovieAdapter;
+    private static String sortString;
+    public static final String SORT_FAVORITE = "favorite";
+    public static final String SORT_TOP_RATED = "top_rated";
+    public static final String SORT_POPULAR = "popular";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            sortString = savedInstanceState.getString("sort_string");
+        }
         setContentView(R.layout.activity_main);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movie);
         mErrorTextView = (TextView) findViewById(R.id.error_loading);
@@ -47,13 +57,57 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mRecyclerView.setHasFixedSize(true);
 
         mMovieAdapter = new MovieAdapter(this);
-        fetchMovies(mMovieAdapter, "popular");
+        sortString = SORT_POPULAR;
+        fetchMovies(mMovieAdapter, sortString);
 
         mRecyclerView.setAdapter(mMovieAdapter);
     }
 
     private void fetchMovies(MovieAdapter adapter, String sortString) {
-        new FetchMovieTask(adapter).execute(sortString);
+        if (sortString.equalsIgnoreCase(SORT_FAVORITE)) {
+            List<Movie> movieList = loadFavorites();
+            if (movieList != null && movieList.size() > 0) {
+                showMovieDataView();
+                adapter.setMovieData(movieList);
+            }
+        } else {
+            new FetchMovieTask(adapter).execute(sortString);
+        }
+    }
+
+    private List<Movie> loadFavorites() {
+        Cursor cursor = new CursorLoader(this,
+                MovieContract.MovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null).loadInBackground();
+
+        List<Movie> movieList = null;
+        if (cursor != null) {
+            movieList = new ArrayList<>();
+
+            while (cursor.moveToNext()) {
+
+                String title = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE)),
+                        poster = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_PATH)),
+                        overview = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_OVERVIEW)),
+                        voteAverage = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE)),
+                        trailerJson = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TRAILERS)),
+                        releaseDate = cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RELEASE_DATE));
+                int movieId = cursor.getInt(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID));
+
+                movieList.add(new Movie(title, poster, overview, movieId, voteAverage, releaseDate, trailerJson));
+            }
+            cursor.close();
+        }
+        return movieList;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        fetchMovies(mMovieAdapter, sortString);
     }
 
     @Override
@@ -66,11 +120,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.sort_most_popular) {
-            fetchMovies(mMovieAdapter, "popular");
+            sortString = SORT_POPULAR;
+            fetchMovies(mMovieAdapter, SORT_POPULAR);
             return true;
         }
         if (id == R.id.sort_top_rated) {
-            fetchMovies(mMovieAdapter, "top_rated");
+            sortString = SORT_TOP_RATED;
+            fetchMovies(mMovieAdapter, SORT_TOP_RATED);
+            return true;
+        }
+        if (id == R.id.sort_favorites) {
+            sortString = SORT_FAVORITE;
+            fetchMovies(mMovieAdapter, SORT_FAVORITE);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -87,22 +148,25 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("sort_string", sortString);
+    }
+
+    @Override
     public void onMovieClick(Movie movie) {
         startActivity(new Intent(this, MovieDetailActivity.class).putExtra("Movie", movie));
     }
 
     class FetchMovieTask extends AsyncTask<String, Void, String> {
 
-
         final String BASE_URL = "https://api.themoviedb.org/3/movie/";
         final String API_KEY = "api_key";
         final MovieAdapter movieAdapter;
 
         HttpURLConnection urlConnection = null;
-        String movieJsonString = null;
-        BufferedReader reader = null;
 
-        public FetchMovieTask(MovieAdapter adapter){
+        public FetchMovieTask(MovieAdapter adapter) {
             movieAdapter = adapter;
         }
 
@@ -153,26 +217,28 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             super.onPostExecute(result);
             mContentLoading.setVisibility(View.GONE);
             if (result != null && !result.equals("")) {
-                List<Movie> movieList = buildfromResult(result);
-                if(movieList!= null && movieList.size() > 0){
+                List<Movie> movieList = buildFromResult(result);
+                if (movieList != null && movieList.size() > 0) {
                     showMovieDataView();
                     movieAdapter.setMovieData(movieList);
-                }else {
+                } else {
                     showErrorMessage();
                 }
-            }else {
+            } else {
                 showErrorMessage();
             }
         }
 
-        private List<Movie> buildfromResult(String result) {
+        private List<Movie> buildFromResult(String result) {
             final String ORIGINAL_TITLE = "original_title";
             final String POSTER_PATH = "poster_path";
             final String OVERVIEW = "overview";
+            final String ID = "id";
             final String VOTE_AVERAGE = "vote_average";
             final String RELEASE_DATE = "release_date";
+//            final String RELEASE_DATE = "release_date";
 
-            if (result == null || "".equals(result)) {
+            if (result == null || result.equals("")) {
                 return null;
             }
 
@@ -195,8 +261,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 movieList.add(new Movie(object.optString(ORIGINAL_TITLE),
                         object.optString(POSTER_PATH),
                         object.optString(OVERVIEW),
+                        object.optInt(ID),
                         object.optString(VOTE_AVERAGE),
-                        object.optString(RELEASE_DATE)));
+                        object.optString(RELEASE_DATE), ""));
             }
             return movieList;
         }

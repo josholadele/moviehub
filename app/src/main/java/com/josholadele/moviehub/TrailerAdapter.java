@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Oladele on 4/16/17.
  */
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
+public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {
 
     private List<Movie> theList;
     private Context context;
@@ -25,7 +25,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
     public static String PosterSize = "w185";
 
 
-    public MovieAdapter(MovieClickListener clickListener) {
+    public TrailerAdapter(MovieClickListener clickListener) {
         this.movieClickListener = clickListener;
     }
 
